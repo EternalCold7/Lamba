@@ -3,6 +3,8 @@
 
 
 #include"Loaders/MyObjLoader.hpp"
+#include <chrono>
+#include<algorithm>
 class Model : public Drawable {
 
 private:
@@ -17,8 +19,12 @@ public:
 	template<class Loader>
 	Model(const std::string & filepath, const std::string & shader_path, const Camera & camera,Loader & l) :
 		m_Shader(shader_path), m_Camera(camera) {
-
+		std::chrono::time_point<std::chrono::system_clock> start, end;
+		start = std::chrono::system_clock::now();
 		m_Meshes = std::move( l.load(filepath));
+		end = std::chrono::system_clock::now();
+		auto seconds = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+
 		for (auto & mesh : m_Meshes) {
 			mesh.SetCamera(&m_Camera);
 			mesh.SetShader(&m_Shader);

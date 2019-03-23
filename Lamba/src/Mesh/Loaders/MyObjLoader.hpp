@@ -9,9 +9,9 @@ class MyObjLoader {
 	using Key = glm::vec<3, std::uint32_t>;
 	using Val = std::uint32_t;
 
-	using VerticiesContainer = std::vector < float>;
-	using NormalsContainer = std::vector < float>;
-	using TexturesContainer = std::vector < float>;
+	using VerticiesContainer = std::vector < glm::vec3>;
+	using NormalsContainer = std::vector < glm::vec3>;
+	using TexturesContainer = std::vector < glm::vec2>;
 	using FacesContainer = std::vector<std::uint32_t>;
 	using MeshesData = std::vector<FacesContainer>;
 
@@ -52,14 +52,19 @@ private :
 
 	MeshRawData m_CurrMeshData;
 
-
-	void parse(char * str);
-	void parseFace(char * str);
-
 	mesh_data m_MeshData;
 
 	MehsDataMap m_MeshMap;
+
+
 	void toRawMeshData();
+	void ParseString(char * str);
+	void ParseVertex(char * vertex_str);
+	void ParseNormal(char * normal_str);
+	void ParseTexture(char * texture_str);
+	void ParseFace(char * face_str);
+	void NewMesh();
+
 public:
 	std::vector<Mesh> & load(const std::string & filepath);
 };
