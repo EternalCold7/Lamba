@@ -8,26 +8,18 @@
 #include "../Shader.h"
 
 struct MeshData {
-	std::vector<glm::vec3> m_Verticies;
-	std::vector<glm::vec3> m_Normals;
-	std::vector<glm::vec2> m_Textures;
-
 	std::vector<glm::vec<3, std::uint32_t>> m_Faces;
 };
 struct MeshRawData {
-	unsigned int verticies_count;
-	float * m_Normals;
-	float * m_Verticies;
+
+
 	unsigned int faces_count;
 	unsigned int * m_Faces;
-	unsigned int textures_coords_count;
-	float * texture_coords;
+
 
 };
 
 struct Mesh : public Drawable {
-	ArrayBuffer m_ArrayBuffer;
-	VertexArray m_VertexArray;
 	ElementsArrayBuffer m_ElementsArray;
 
 	const Camera * m_Camera;

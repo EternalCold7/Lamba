@@ -2,9 +2,17 @@
 #define _model_hpp_
 
 
-#include"Loaders/MyObjLoader.hpp"
+#include"Mesh.h"
 #include <chrono>
 #include<algorithm>
+
+struct ModelData {
+	std::vector < glm::vec3> verticies;
+	std::vector < glm::vec3> normals;
+	std::vector < glm::vec2> textures;
+	std::vector<std::vector<std::uint32_t>> meshes;
+};
+
 class Model : public Drawable {
 
 private:
@@ -16,21 +24,24 @@ private:
 
 public:
 
+
 	template<class Loader>
 	Model(const std::string & filepath, const std::string & shader_path, const Camera & camera,Loader & l) :
 		m_Shader(shader_path), m_Camera(camera) {
-		std::chrono::time_point<std::chrono::system_clock> start, end;
-		start = std::chrono::system_clock::now();
-		m_Meshes = std::move( l.load(filepath));
-		end = std::chrono::system_clock::now();
-		auto seconds = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+
+
+		HandleModelData(l.load(filepath));
 
 		for (auto & mesh : m_Meshes) {
 			mesh.SetCamera(&m_Camera);
 			mesh.SetShader(&m_Shader);
 		}
+		
 	}
+	void HandleModelData(ModelData & data);
 	void Draw() const noexcept override;
+
+
 	void Rotate(glm::vec3 & to, float angle) {
 		for (auto & mesh : m_Meshes)
 			mesh.Rotate(to, angle);

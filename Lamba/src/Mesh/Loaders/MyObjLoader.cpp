@@ -1,14 +1,14 @@
 #include "MyObjLoader.hpp"
 #include <cstdio>
 #include <rxcpp/rx.hpp>
-
+#include "../Model.hpp"
 namespace Rx {
 	using namespace rxcpp;
 	using namespace rxcpp::subjects;
 	using namespace rxcpp::operators;
 	using namespace rxcpp::util;
 }
-
+const unsigned int MyObjLoader::reserve_amount = 10000000;
 
 void MyObjLoader::ParseFace(char * str)
 {
@@ -21,7 +21,7 @@ void MyObjLoader::ParseFace(char * str)
 	while ( tmp = strtok(nullptr, " "))
 	{
 		uint32_t first = ~0u;
-
+		auto & currMesh = m_ReturnData.meshes.back();
 		bool hasTexture = strstr(tmp, "//") == nullptr;
 		
 		
@@ -55,27 +55,27 @@ void MyObjLoader::ParseFace(char * str)
 
 
 		if (i > 2) {
-			auto last = m_MeshData.faces.back();
-			m_MeshData.faces.push_back(first);
-			m_MeshData.faces.push_back(last);
+			auto last = currMesh.back();
+			currMesh.push_back(first);
+			currMesh.push_back(last);
 		}
 
 		if (m_MeshMap.find(vertex) == m_MeshMap.end()) {
 			m_MeshMap.insert(std::make_pair(vertex, m_MeshMap.size()));
-			m_MeshData.verticies.push_back(m_ModelData.verticies[vertex.x - 1]);
+			m_ReturnData.verticies.push_back(m_ModelData.verticies[vertex.x - 1]);
 
 			/*if (vertex.y != ~0u) 
 				m_MeshData.textures.push_back(m_ModelData.verticies[vertex.y - 1]);*/
 
-			m_MeshData.normals.push_back(m_ModelData.normals[vertex.z - 1]);
-			m_MeshData.faces.push_back(m_MeshMap.size() - 1);
+			m_ReturnData.normals.push_back(m_ModelData.normals[vertex.z - 1]);
+			currMesh.push_back(m_MeshMap.size() - 1);
 		}
 
 		else {
-			m_MeshData.faces.push_back(m_MeshMap[vertex]);
+			currMesh.push_back(m_MeshMap[vertex]);
 		}
 		if (first == ~0u)
-			first = m_MeshData.faces.back();
+			first = currMesh.back();
 
 		++i;
 		temp = _strdup(str);
@@ -84,35 +84,6 @@ void MyObjLoader::ParseFace(char * str)
 			tmp = strtok(nullptr, " ");
 	}
 
-
-}
-
-void MyObjLoader::toRawMeshData()
-{
-	m_MeshData.faces.shrink_to_fit();
-	m_MeshData.normals.shrink_to_fit();
-	m_MeshData.verticies.shrink_to_fit();
-	m_MeshData.textures.shrink_to_fit();
-
-
-	m_CurrMeshData.faces_count = m_MeshData.faces.size();
-	m_CurrMeshData.m_Faces = m_MeshData.faces.data();
-
-	m_CurrMeshData.verticies_count = m_MeshData.verticies.size() * 3;
-
-
-	if (!m_MeshData.normals.empty())
-		m_CurrMeshData.m_Normals = &m_MeshData.normals[0][0];
-
-	m_MeshData.verticies.shrink_to_fit();
-	m_CurrMeshData.m_Verticies = &m_MeshData.verticies[0][0];
-
-	m_MeshData.textures.shrink_to_fit();
-	if (!m_MeshData.textures.empty())
-	{
-		m_CurrMeshData.textures_coords_count = m_MeshData.textures.size() * 2;
-		m_CurrMeshData.texture_coords = &m_MeshData.textures[0][0];
-	}
 
 }
 
@@ -141,19 +112,8 @@ void MyObjLoader::ParseTexture(char * texture_str) {
 }
 
 void MyObjLoader::NewMesh() {
-	//if (!m_MeshData.verticies.empty()) {
-	//	toRawMeshData();
-	//	m_Meshes.emplace_back(m_CurrMeshData);
-	//}
-
-	//m_MeshData = mesh_data();
-	//m_MeshMap = MehsDataMap();
-
-	////m_MeshMap.reserve(10000);
-	////m_MeshData.faces.reserve(100000);
-	////m_MeshData.textures.reserve(100000);
-	////m_MeshData.normals.reserve(100000);
-	//m_MeshData.verticies.reserve(100000);
+	m_ReturnData.meshes.push_back({});
+	m_ReturnData.meshes.back().reserve(reserve_amount/100);
 }
 
 void MyObjLoader::ParseString(char * str) {
@@ -170,19 +130,16 @@ void MyObjLoader::ParseString(char * str) {
 	else if (str[0] == 'g')
 		NewMesh();
 }
-std::vector<Mesh>& MyObjLoader::load(const std::string & filepath)
+[[nodiscard]] ModelData& MyObjLoader::load(const std::string & filepath)
 {
-	unsigned int reserve_amount = 10000000;
-	m_MeshMap.reserve(reserve_amount);
-	m_MeshData.faces.reserve(reserve_amount);
-	m_MeshData.textures.reserve(reserve_amount);
-	m_MeshData.normals.reserve(reserve_amount);
-	m_MeshData.verticies.reserve(reserve_amount);
+	
+
+	
 	FILE *file = fopen(filepath.c_str(), "r");
 	if (file == nullptr)
 		throw;
 	char buff[2048];
-
+	ReserveContainers();
 	auto strings = Rx::observable<>::create<char*>([&buff, &file](Rx::subscriber<char *> s) {
 		while (fgets(buff, sizeof(buff), file) != nullptr) {
 			s.on_next(buff);
@@ -194,11 +151,17 @@ std::vector<Mesh>& MyObjLoader::load(const std::string & filepath)
 		subscribe([this](char * str) {
 		ParseString(str);
 	}, []() {});
+	return m_ReturnData;
+}
 
-
-	if (!m_MeshData.verticies.empty()) {
-		toRawMeshData();
-		m_Meshes.emplace_back(m_CurrMeshData);
-	}
-	return m_Meshes;
+void MyObjLoader::ReserveContainers() {
+	m_MeshMap.reserve(reserve_amount);
+	m_ReturnData.normals.reserve(reserve_amount);
+	m_ReturnData.verticies.reserve(reserve_amount);
+	m_ReturnData.textures.reserve(reserve_amount);
+	 
+	
+	m_ModelData.normals.reserve(reserve_amount);
+	m_ModelData.verticies.reserve(reserve_amount);
+	m_ModelData.textures.reserve(reserve_amount);
 }

@@ -1,5 +1,5 @@
 #include"Application.hpp"
-
+#include "Mesh/Loaders/MyObjLoader.hpp"
 Application::Application(Rx::observable<int> obs, Rx::observable < glm::vec<2, int> > mouse) :
 	m_eventObserver(obs),m_mouseObservable(mouse),m_Camera(obs,mouse)
 {
