@@ -2,33 +2,33 @@
 #include <cstdio>
 #include <rxcpp/rx.hpp>
 #include "../Model.hpp"
+
 namespace Rx {
 	using namespace rxcpp;
 	using namespace rxcpp::subjects;
 	using namespace rxcpp::operators;
 	using namespace rxcpp::util;
 }
-const unsigned int MyObjLoader::reserve_amount = 10000000;
+
+const unsigned int MyObjLoader::reserve_amount = 100000;
 
 void MyObjLoader::ParseFace(char * str)
 {
-	if (strlen(str) > 100)
-		std::cout << strlen(str) << std::endl;
 	char * temp = _strdup(str);
 	char * tmp = strtok(temp, " ");
 	int i = 0;
-
+	uint32_t first = ~0u;
 	while ( tmp = strtok(nullptr, " "))
 	{
-		uint32_t first = ~0u;
-		auto & currMesh = m_ReturnData.meshes.back();
+		
+		auto & currMesh = m_ReturnData.meshes.back().m_Faces;
 		bool hasTexture = strstr(tmp, "//") == nullptr;
 		
 		
 		auto res = strtok(tmp, "/");
 		unsigned int converted;
 		sscanf(res, "%u", &converted);
-		glm::vec<3, std::uint32_t> vertex;
+		glm::vec<3, uint32_t> vertex;
 		vertex.x = converted;
 
 
@@ -64,8 +64,8 @@ void MyObjLoader::ParseFace(char * str)
 			m_MeshMap.insert(std::make_pair(vertex, m_MeshMap.size()));
 			m_ReturnData.verticies.push_back(m_ModelData.verticies[vertex.x - 1]);
 
-			/*if (vertex.y != ~0u) 
-				m_MeshData.textures.push_back(m_ModelData.verticies[vertex.y - 1]);*/
+			if (vertex.y != ~0u) 
+			 	m_ReturnData.textures.push_back(m_ModelData.textures[vertex.y - 1]);
 
 			m_ReturnData.normals.push_back(m_ModelData.normals[vertex.z - 1]);
 			currMesh.push_back(m_MeshMap.size() - 1);
@@ -78,13 +78,26 @@ void MyObjLoader::ParseFace(char * str)
 			first = currMesh.back();
 
 		++i;
-		temp = _strdup(str);
+		strcpy(temp, str);
 		tmp = strtok(temp, " ");
 		for(int j = 0; j< i;++j) 
 			tmp = strtok(nullptr, " ");
 	}
+}
 
-
+void MyObjLoader::SetCurrentMaterial(char * str)
+{
+	
+	char t[10];
+	char name[100];
+	sscanf(str, "%s %s", t, name);
+	auto it = m_MaterialLoader.getMaterials().find(std::string(name));
+	if (it != m_MaterialLoader.getMaterials().end()) {
+		m_CurrentMaterial = it->second;
+	}
+	else {
+		throw "error";
+	}
 }
 
 
@@ -111,12 +124,59 @@ void MyObjLoader::ParseTexture(char * texture_str) {
 	m_ModelData.textures.push_back(std::move(t));
 }
 
-void MyObjLoader::NewMesh() {
+void MyObjLoader::NewMesh(const char * str) {
+	char a[2];
+	char name[100];
+	sscanf(str, "%s %s", a, name);
+	if (m_ReturnData.meshes.size() > 0) {
+		if(m_ReturnData.meshes.back().m_Faces.empty())
+			m_ReturnData.meshes.pop_back();
+		else {
+			m_ReturnData.meshes.back().mat = m_CurrentMaterial;
+
+			MeshCoordinates coords;
+			auto & faces = m_ReturnData.meshes.back().m_Faces;
+			coords.maxX = m_ReturnData.verticies[faces.back()].x;
+			coords.minX = m_ReturnData.verticies[faces.back()].x;
+			coords.maxY = m_ReturnData.verticies[faces.back()].y;
+			coords.minY = m_ReturnData.verticies[faces.back()].y;
+			coords.maxZ = m_ReturnData.verticies[faces.back()].z;
+			coords.minZ = m_ReturnData.verticies[faces.back()].z;
+			for (auto num : faces) {
+
+				auto x = m_ReturnData.verticies[num].x;
+				auto y = m_ReturnData.verticies[num].y;
+				auto z = m_ReturnData.verticies[num].z;
+				if (x > coords.maxX)
+					coords.maxX = x;
+				else if (x < coords.minX)
+					coords.minX = x;
+
+				if (y > coords.maxY)
+					coords.maxY = y;
+				else if (x < coords.minY)
+					coords.minY = y;
+
+				if (z > coords.maxZ)
+					coords.maxZ = z;
+				else if (z < coords.minZ)
+					coords.minZ = z;
+
+			}
+			m_ReturnData.meshes.back().coords = coords;
+
+		}
+			
+	}
+	
+	
 	m_ReturnData.meshes.push_back({});
-	m_ReturnData.meshes.back().reserve(reserve_amount/100);
+	m_ReturnData.meshes.back().name = name;
 }
 
 void MyObjLoader::ParseString(char * str) {
+
+
 	if (str[0] == 'v') {
 		if (str[1] == 't')
 			ParseTexture(str);
@@ -127,15 +187,32 @@ void MyObjLoader::ParseString(char * str) {
 	}
 	else if (str[0] == 'f')
 		ParseFace(str);
-	else if (str[0] == 'g')
-		NewMesh();
+	else if (str[0] == 'g' || str[0] == 'o')
+		NewMesh(str);
+	else {
+		char s[100];
+		sscanf(str, "%s", s);
+		if (!strcmp(s, "usemtl"))
+			SetCurrentMaterial(str);
+		else if (!strcmp(s, "mtllib"))
+		{
+			char mtlib[7];
+			char filename[100];
+			sscanf(str, "%s %s", mtlib, filename);
+			m_MaterialLoader.load(m_Folder, filename);
+		}
+	}
+		
+	
 }
-[[nodiscard]] ModelData& MyObjLoader::load(const std::string & filepath)
-{
-	
 
-	
-	FILE *file = fopen(filepath.c_str(), "r");
+
+[[nodiscard]] ModelData& MyObjLoader::load(const std::string & folder, const std::string & filepath)
+{
+
+	m_Folder = folder;
+	auto f = folder + filepath;
+	FILE *file = fopen(f.c_str(), "r");
 	if (file == nullptr)
 		throw;
 	char buff[2048];
@@ -150,11 +227,14 @@ void MyObjLoader::ParseString(char * str) {
 	strings.filter([](char * str) { return str[0] != '#'; }).
 		subscribe([this](char * str) {
 		ParseString(str);
-	}, []() {});
+	}, [this]() {
+		m_ReturnData.meshes.back().mat = m_CurrentMaterial;
+	});
 	return m_ReturnData;
 }
 
 void MyObjLoader::ReserveContainers() {
+
 	m_MeshMap.reserve(reserve_amount);
 	m_ReturnData.normals.reserve(reserve_amount);
 	m_ReturnData.verticies.reserve(reserve_amount);

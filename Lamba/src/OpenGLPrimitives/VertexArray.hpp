@@ -23,7 +23,7 @@ public:
 	template<>
 	void glPushAttrib<float>(unsigned int size,unsigned int data_size_in_bytes) {
 		Bind();
-		GLCall(glVertexAttribPointer(m_AttribIndex, size, GL_FLOAT, GL_FALSE, size * sizeof(float), (const void *)m_Attrib_Offset));
+		GLCall(glVertexAttribPointer(m_AttribIndex, size, GL_FLOAT, GL_FALSE,0, (const void *)m_Attrib_Offset));
 		GLCall(glEnableVertexAttribArray(m_AttribIndex));
 		m_Attrib_Offset += data_size_in_bytes;
 		m_AttribIndex++;

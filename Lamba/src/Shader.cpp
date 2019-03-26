@@ -72,7 +72,8 @@ void Shader::Unbind() const {
 	glUseProgram(0);
 }
 Shader::~Shader() {
-	glDeleteProgram(m_RendererID);
+	if(m_RendererID != 0)
+		glDeleteProgram(m_RendererID);
 }
 
 void Shader::SetUniformMat4(const std::string & name, const float * data) const
@@ -83,8 +84,38 @@ void Shader::SetUniformMat4(const std::string & name, const float * data) const
 	glUniformMatrix4fv(loc, 1, GL_FALSE, data);
 }
 
+void Shader::SetUniformui(const std::string & name, const uint32_t val) const
+{
+	auto loc = glGetUniformLocation(m_RendererID, name.c_str());
+	if (loc < 0)
+		throw;
+	glUniform1ui(loc, val);
+}
+
+void Shader::SetUnifrom3f(const std::string & name, const float * val) const
+{
+	auto loc = glGetUniformLocation(m_RendererID, name.c_str());
+	if (loc < 0)
+		throw;
+	glUniform3fv(loc, 1, val);
+}
+
+void Shader::SetUniformf(const std::string & name, const float val) const
+{
+	auto loc = glGetUniformLocation(m_RendererID, name.c_str());
+	if (loc < 0)
+		throw;
+	glUniform1f(loc, val);
+}
+
+
 Shader::Shader(const std::string & vPath) : m_path(vPath), m_RendererID(0)
 {
 	m_RendererID = glCreateProgram();
 	buildProgram();
+}
+Shader::Shader(Shader && sh) :m_RendererID(sh.m_RendererID),
+	m_path(sh.m_path)
+{
+	sh.m_RendererID = 0;
 }

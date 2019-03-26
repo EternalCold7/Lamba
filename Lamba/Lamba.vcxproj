@@ -167,8 +167,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\Avent.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Mesh\Loaders\MtlLoader.cpp" />
     <ClCompile Include="src\Mesh\Loaders\MyObjLoader.cpp" />
     <ClCompile Include="src\Mesh\Mesh.cpp" />
     <ClCompile Include="src\Mesh\Model.cpp" />
@@ -184,9 +186,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.hpp" />
+    <ClInclude Include="src\Avent.hpp" />
     <ClInclude Include="src\Camera.hpp" />
     <ClInclude Include="src\Drawable.hpp" />
+    <ClInclude Include="src\Mesh\Loaders\jpeg_loader.hpp" />
+    <ClInclude Include="src\Mesh\Loaders\MtlLoader.hpp" />
     <ClInclude Include="src\Mesh\Loaders\MyObjLoader.hpp" />
+    <ClInclude Include="src\Mesh\Material.hpp" />
     <ClInclude Include="src\Mesh\Mesh.h" />
     <ClInclude Include="src\Mesh\Model.hpp" />
     <ClInclude Include="src\OpenGLPrimitives\ArrayBuffer.hpp" />
@@ -543,6 +549,9 @@
     <ClInclude Include="vendor\stb_image\stb_image.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\only_diffuse.shader" />
+    <None Include="shaders\textured_light.shader" />
+    <None Include="shaders\wheel.shader" />
     <None Include="vendor\glm\detail\func_common.inl" />
     <None Include="vendor\glm\detail\func_common_simd.inl" />
     <None Include="vendor\glm\detail\func_exponential.inl" />

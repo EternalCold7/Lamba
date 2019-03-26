@@ -60,6 +60,12 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="src\Mesh\Loaders\MtlLoader.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Avent.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Mesh\Loaders\MyObjLoader.hpp">
@@ -1136,6 +1142,18 @@
     <ClInclude Include="vendor\stb_image\stb_image.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="src\Mesh\Loaders\jpeg_loader.hpp">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Mesh\Loaders\MtlLoader.hpp">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Mesh\Material.hpp">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Avent.hpp">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="vendor\glm\detail\func_common.inl">
@@ -1531,5 +1549,8 @@
     <None Include="vendor\glm\gtx\wrap.inl">
       <Filter>Файлы заголовков</Filter>
     </None>
+    <None Include="shaders\textured_light.shader" />
+    <None Include="shaders\only_diffuse.shader" />
+    <None Include="shaders\wheel.shader" />
   </ItemGroup>
 </Project>

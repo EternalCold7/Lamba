@@ -6,13 +6,16 @@ class Texture {
 
 public:
 	Texture(const std::string & image_path);
+	Texture(const Texture & tex) = delete;
+	Texture(Texture && tex);
+	~Texture();
 	void Bind();
+	std::string GetFileExtension(const std::string & filename) const;
+	std::tuple<int, int> GetTextureFileAttribs(const std::string & extension) const;
 	inline unsigned int GetTextureDescriptor() const { return m_TextureDescriptor; }
 private:
-	static unsigned short int BindedTexturesAmount;
 	unsigned int m_TextureDescriptor;
 	void SetUpParams() const;
-	unsigned short int m_TextureNumber;
 };
 
 #endif //_TEXTURE_HPP_

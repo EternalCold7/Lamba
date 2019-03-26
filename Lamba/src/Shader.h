@@ -15,13 +15,18 @@ private:
 	ShaderSource parse();
 	void buildProgram();
 	unsigned int compileShader(const std::string & source, unsigned int type);
-
+	
 public:
 	void Bind() const;
 	void Unbind() const;
 	Shader(const std::string & vPath);
 	~Shader();
+	Shader(const Shader & sh) = delete;
+	Shader(Shader && sh);
 	inline unsigned int getRendererID() const { return m_RendererID; }
 	void SetUniformMat4(const std::string & name, const float * data)const;
+	void SetUniformui(const std::string & name, const uint32_t val) const;
+	void SetUnifrom3f(const std::string & name, const float * val) const;
+	void SetUniformf(const std::string & name, const float val) const;
 };
 #endif //_SHADER_HPP_									

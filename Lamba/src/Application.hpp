@@ -4,6 +4,7 @@
 #include "Camera.hpp"
 #include "Mesh/Model.hpp"
 #include <memory>
+#include"Avent.hpp"
 
 namespace Rx {
 	using namespace rxcpp;
@@ -15,7 +16,7 @@ namespace Rx {
 class Application {
 private:	Window m_Window;
 			Camera m_Camera;
-			std::vector<std::shared_ptr<Model>> m_Models;
+			Avent m_Avent;
 public:	Application(Rx::observable<int> obs, Rx::observable < glm::vec<2, int> > mouse);
 		inline Window * GetWindow() { return &m_Window; }	void Start() { m_Window.StartDisplay(); }
 		Rx::observable<int> m_eventObserver;
