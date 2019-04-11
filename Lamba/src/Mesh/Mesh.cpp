@@ -50,7 +50,7 @@ void Mesh::Draw() const noexcept {
 
 	SetupFragmentShader();
 
-	glDrawElements(GL_TRIANGLES, m_ElementsArray.GetDataSize() * 4, GL_UNSIGNED_INT, nullptr);
+	GLCall(glDrawElements(GL_TRIANGLES, m_ElementsArray.GetDataSize() * 4, GL_UNSIGNED_INT, nullptr));
 	
 }
 
@@ -59,7 +59,7 @@ void Mesh::SetupFragmentShader() const
 {
 	m_Shader->SetUnifrom3f("mat.ambient", &m_Material->ambient[0]);
 	if (m_Material->diffuse_texture) {
-		glActiveTexture(GL_TEXTURE0);
+		GLCall(glActiveTexture(GL_TEXTURE0));
 		glBindTexture(GL_TEXTURE_2D,m_Material->diffuse_texture->GetTextureDescriptor());
 		m_Shader->SetUniformui("mat.diffuse", 0);
 	}
@@ -68,7 +68,7 @@ void Mesh::SetupFragmentShader() const
 	}
 
 	if (m_Material->specular_texture) {
-		glActiveTexture(GL_TEXTURE1);
+		GLCall(glActiveTexture(GL_TEXTURE1));
 		glBindTexture(GL_TEXTURE_2D, m_Material->specular_texture->GetTextureDescriptor());
 		m_Shader->SetUniformui("mat.specular",1);
 	}
@@ -82,10 +82,10 @@ void Mesh::SetupFragmentShader() const
 
 Mesh::AttribsSetter::AttribsSetter()
 {
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
-	glCullFace(GL_BACK);
+	GLCall(glEnable(GL_CULL_FACE));
+	GLCall(glEnable(GL_DEPTH_TEST));
+	GLCall(glDepthFunc(GL_LEQUAL));
+	GLCall(glCullFace(GL_BACK));
 }
 
 Mesh::AttribsSetter::~AttribsSetter()

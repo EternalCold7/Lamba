@@ -30,8 +30,8 @@ public:
 		m_Shaders.emplace_back("shaders/light.shader");
 		m_Shaders.emplace_back( "shaders/textured_light.shader" );
 		m_Shaders.emplace_back( "shaders/only_diffuse.shader" );
-
-		HandleModelData(l.load(folder,filename));
+		l.load(folder, filename);
+		HandleModelData(l.GetData());
 
 		for (auto & mesh : m_Meshes) {
 			mesh.SetCamera(&m_Camera);

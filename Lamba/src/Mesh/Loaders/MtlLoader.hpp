@@ -6,14 +6,14 @@
 class MtlLoader {
 	using Value = std::shared_ptr<Material>;
 	using  Key = std::string;
-	std::unordered_map<Key, Value> m_Materials;
+	
 	void ParseString(const char * str);
 	void AddMaterial(char * name);
 	std::shared_ptr<Material> m_CurrentMaterial;
 	std::string m_Folder;
 public:
+	std::unique_ptr< std::unordered_map<Key, Value> >m_Materials;
 	void load(const std::string & folder, const std::string & filepath);
-	inline const std::unordered_map<std::string, std::shared_ptr<Material>> & getMaterials() const { return m_Materials; }
 private:
 	void SetAmbient(const char * str);
 	void SetDiffuse(const char * str);

@@ -34,8 +34,8 @@ void MtlLoader::ParseString(const char * str)
 
 void MtlLoader::AddMaterial(char * name)
 {
-	m_Materials.emplace(name, std::make_shared<Material>());
-	m_CurrentMaterial = m_Materials[name];
+	m_Materials->emplace(name, std::make_shared<Material>());
+	m_CurrentMaterial = (*m_Materials)[name];
 }
 
 void MtlLoader::load(const std::string & folder, const std::string & filepath)
@@ -43,9 +43,9 @@ void MtlLoader::load(const std::string & folder, const std::string & filepath)
 	m_Folder = folder;
 	FILE * file = fopen((folder + filepath).c_str(), "r");
 	if (!file) {
-		throw;
+		throw std::runtime_error("File not opened");
 	}
-
+	m_Materials = std::make_unique<std::unordered_map<Key, Value>>();
 	char buff[1024];
 
 	auto input_stream = Rx::observable<>::create<const char *>

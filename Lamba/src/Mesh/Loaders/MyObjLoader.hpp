@@ -24,30 +24,52 @@ class MyObjLoader {
 
 	using MehsDataMap = std::unordered_map<Key,Val,Vec3UIntHash>;
 
+	
+	class ParsingStrategy {
+	public:
+		virtual void HandleString(MyObjLoader * loader, char * str) = 0;
+	};
+
+	class FaceParsingStrategy;
+	class VertexParsingStrategy;
+	class NormalParsingStrategy;
+	class TextureParsingStrategy;
+	class MeshCreatingParsingStrategy;
+	class MaterialsParsingStrategy;
+	class MaterialSetParsingStrategy;
+	class DoNothingParsingStrategy;
+	friend ParsingStrategy;
+
+	class StrategyFactory {
+		char m_State[3];
+		ParsingStrategy * m_CurrentStrategy = nullptr;
+
+	public:
+		ParsingStrategy * CreateStrategy(char * str);
+	};
+
+
 private :
 
 	std::string m_Folder;
 
-	char m_State;
-	MtlLoader m_MaterialLoader;
-	ModelData m_ModelData; 
+	std::vector<glm::vec3> m_Verticies;
+	std::vector<glm::vec3> m_Normals;
+	std::vector<glm::vec2> m_TextureCoordinates;
+
 	ModelData m_ReturnData;
-	MehsDataMap m_MeshMap;
-	std::shared_ptr<Material > m_CurrentMaterial;
+	MehsDataMap m_MeshFacesMap;
 
-	void ParseString(char * str);
-	void ParseVertex(char * vertex_str);
-	void ParseNormal(char * normal_str);
-	void ParseTexture(char * texture_str);
-	void ParseFace(char * face_str);
+	std::shared_ptr<Material> m_CurrentMaterial;
+	StrategyFactory m_ParsingFactory;
 
-	void SetCurrentMaterial(char * str);
+	std::unique_ptr< std::unordered_map<std::string, std::shared_ptr<Material>>> m_Materilas;
 
-	void NewMesh(const char * str);
 
 	void ReserveContainers();
 public:
-	[[nodiscard]] ModelData & load(const std::string & folder,const std::string & filepath);
+	void load(const std::string & folder,const std::string & filepath);
+	[[nodiscard]]ModelData & GetData() { return m_ReturnData; };
 };
 
 #endif // !_MY_OBJ_LOADER_HPP_
