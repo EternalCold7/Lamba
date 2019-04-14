@@ -195,12 +195,14 @@
     <ClInclude Include="src\Mesh\Material.hpp" />
     <ClInclude Include="src\Mesh\Mesh.h" />
     <ClInclude Include="src\Mesh\Model.hpp" />
+    <ClInclude Include="src\Mesh\ModelDrawer.hpp" />
     <ClInclude Include="src\OpenGLPrimitives\ArrayBuffer.hpp" />
     <ClInclude Include="src\OpenGLPrimitives\ElementsArrayBuffer.hpp" />
     <ClInclude Include="src\OpenGLPrimitives\VertexArray.hpp" />
     <ClInclude Include="src\Renderer.hpp" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Texture.hpp" />
+    <ClInclude Include="src\Transformalbe.hpp" />
     <ClInclude Include="src\Window.hpp" />
     <ClInclude Include="vendor\glm\common.hpp" />
     <ClInclude Include="vendor\glm\detail\compute_common.hpp" />
