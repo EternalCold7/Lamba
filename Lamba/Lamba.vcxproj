@@ -169,6 +169,7 @@
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Avent.cpp" />
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Light\Lamp.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Mesh\Loaders\MtlLoader.cpp" />
     <ClCompile Include="src\Mesh\Loaders\MyObjLoader.cpp" />
@@ -189,6 +190,8 @@
     <ClInclude Include="src\Avent.hpp" />
     <ClInclude Include="src\Camera.hpp" />
     <ClInclude Include="src\Drawable.hpp" />
+    <ClInclude Include="src\Light\Lamp.hpp" />
+    <ClInclude Include="src\Light\Light.hpp" />
     <ClInclude Include="src\Mesh\Loaders\jpeg_loader.hpp" />
     <ClInclude Include="src\Mesh\Loaders\MtlLoader.hpp" />
     <ClInclude Include="src\Mesh\Loaders\MyObjLoader.hpp" />
@@ -551,7 +554,9 @@
     <ClInclude Include="vendor\stb_image\stb_image.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\dir_light.shader" />
     <None Include="shaders\only_diffuse.shader" />
+    <None Include="shaders\point_light.shader" />
     <None Include="shaders\textured_light.shader" />
     <None Include="shaders\wheel.shader" />
     <None Include="vendor\glm\detail\func_common.inl" />

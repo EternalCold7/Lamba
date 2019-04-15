@@ -54,7 +54,7 @@ void Texture::SetUpParams() const {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 } 
 
-void Texture::Bind() {
+void Texture::Bind() const {
 	
 	GLCall(glBindTexture(GL_TEXTURE_2D, m_TextureDescriptor));
 	
