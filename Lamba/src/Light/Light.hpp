@@ -65,5 +65,27 @@ public:
 		shader.SetUniformf("pointLights[" + sIndex + "].quadratic", light.m_quadratic);
 	}
 };
+class PointLightBuilder {
+	
+protected:
+	PointLight m_Light{};
+	virtual glm::vec3 SetAmbient() = 0;
+	virtual glm::vec3 SetDiffuse() = 0;
+	virtual glm::vec3 SetSpecular() = 0;
+	virtual float SetLinear() = 0;
+	virtual float SetConstant() = 0;
+	virtual float SetQuadratic() = 0;
 
+public:
+	
+	PointLight GetLight() { 
+		m_Light.m_ambient = SetAmbient();
+		m_Light.m_diffuse = SetDiffuse();
+		m_Light.m_specular = SetSpecular();
+		m_Light.m_linear = SetLinear();
+		m_Light.m_constant = SetConstant();
+		m_Light.m_quadratic = SetQuadratic();
+		return m_Light; 
+	};
+};
 #endif // _LIGHT_HPP_

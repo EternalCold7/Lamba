@@ -1,7 +1,6 @@
 #include"Texture.hpp"
 #include"stb_image/stb_image.hpp"
 #include<iostream>
-#define TJE_IMPLEMENTATION
 #include"Mesh/Loaders/jpeg_loader.hpp"
 
 #include<sstream>
@@ -19,7 +18,7 @@ Texture::Texture(const std::string & image_path): m_TextureDescriptor(0) {
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, source, width, height, 0, dest, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
+		//glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else
 	{
@@ -74,12 +73,16 @@ std::tuple<int, int> Texture::GetTextureFileAttribs(const std::string & extensio
 {
 	int source;
 	int dest;
-	if (extension == "tga") {
-		source = GL_RGB8;
-		dest = GL_RGB8;
+	if (extension == "tga" ) {
+		source = GL_RGB;
+		dest = GL_RGB;
 	}
-	else if (extension == "jpeg")
+	else if (extension == "jpeg" )
 	{
+		source = GL_RGB;
+		dest = GL_RGB;
+	}
+	else if (extension == "jpg") {
 		source = GL_RGB;
 		dest = GL_RGB;
 	}

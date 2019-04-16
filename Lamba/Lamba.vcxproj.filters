@@ -1569,5 +1569,7 @@
     <None Include="shaders\wheel.shader" />
     <None Include="shaders\dir_light.shader" />
     <None Include="shaders\point_light.shader" />
+    <None Include="shaders\lamp.shader" />
+    <None Include="shaders\point_light_textured.shader" />
   </ItemGroup>
 </Project>

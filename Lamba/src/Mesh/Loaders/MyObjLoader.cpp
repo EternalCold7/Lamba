@@ -261,7 +261,8 @@ void MyObjLoader::load(const std::string & folder, const std::string & filepath)
 		m_ParsingFactory.CreateStrategy(str)->HandleString(this, str);
 
 	}, [this]() {
-		m_ReturnData.meshes.back().mat = m_CurrentMaterial;
+		if(m_Materilas && !m_Materilas->empty())
+			m_ReturnData.meshes.back().mat = m_Materilas->begin()->second;
 	});
 
 }

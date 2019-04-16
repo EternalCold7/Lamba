@@ -23,7 +23,7 @@ public:
 		m_Light.m_position = newPosition; 
 		m_ModelMatrix = glm::translate(m_ModelMatrix, newPosition); 
 	}
-	void ChangeLight(const PointLight & light) { m_Light = light; }
+	void ChangeLight(PointLightBuilder & builder) { m_Light = builder.GetLight(); }
 	const PointLight & GetLight() const noexcept { return m_Light; }
 	Lamp(const Camera * cam);
 	virtual void Draw() const noexcept override {
@@ -51,5 +51,7 @@ public:
 
 	
 };
+
+
 
 #endif // !_LAMP_HPP_

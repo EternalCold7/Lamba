@@ -555,8 +555,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\dir_light.shader" />
+    <None Include="shaders\lamp.shader" />
     <None Include="shaders\only_diffuse.shader" />
     <None Include="shaders\point_light.shader" />
+    <None Include="shaders\point_light_textured.shader" />
     <None Include="shaders\textured_light.shader" />
     <None Include="shaders\wheel.shader" />
     <None Include="vendor\glm\detail\func_common.inl" />

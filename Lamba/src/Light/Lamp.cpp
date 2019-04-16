@@ -5,9 +5,9 @@
 
 void Lamp::SetupLight()
 {
-	m_Light.m_ambient = { 1.f,1.f,1.f };
-	m_Light.m_diffuse = { 1.f,1.f,1.f };
-	m_Light.m_specular = { 1.f,0.f,0.f };
+	m_Light.m_ambient = { 1.f,0.6f,0.f };
+	m_Light.m_diffuse = { 1.f,0.6f,0.f };
+	m_Light.m_specular = { 1.f,0.6f,0.f };
 
 	m_Light.m_quadratic = 0.032f;
 	m_Light.m_constant = 1.f;
