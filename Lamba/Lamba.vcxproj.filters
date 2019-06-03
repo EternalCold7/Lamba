@@ -66,6 +66,9 @@
     <ClCompile Include="src\Avent.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="src\Light\Lamp.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Mesh\Loaders\MyObjLoader.hpp">
@@ -1160,6 +1163,12 @@
     <ClInclude Include="src\Transformalbe.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="src\Light\Light.hpp">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Light\Lamp.hpp">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="vendor\glm\detail\func_common.inl">
@@ -1558,5 +1567,9 @@
     <None Include="shaders\textured_light.shader" />
     <None Include="shaders\only_diffuse.shader" />
     <None Include="shaders\wheel.shader" />
+    <None Include="shaders\dir_light.shader" />
+    <None Include="shaders\point_light.shader" />
+    <None Include="shaders\lamp.shader" />
+    <None Include="shaders\point_light_textured.shader" />
   </ItemGroup>
 </Project>

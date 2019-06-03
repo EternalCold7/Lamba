@@ -9,7 +9,7 @@ public:
 	Texture(const Texture & tex) = delete;
 	Texture(Texture && tex);
 	~Texture();
-	void Bind();
+	void Bind() const;
 	std::string GetFileExtension(const std::string & filename) const;
 	std::tuple<int, int> GetTextureFileAttribs(const std::string & extension) const;
 	inline unsigned int GetTextureDescriptor() const { return m_TextureDescriptor; }

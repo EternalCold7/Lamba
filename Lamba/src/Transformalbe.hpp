@@ -6,7 +6,7 @@ class Transformable {
 protected:
 	glm::mat4 m_ModelMatrix = glm::mat4(1.f);
 	const glm::mat4 * m_ViewMatrix;
-	glm::mat4 m_ProjectionMatrix;
+	glm::mat4 m_ProjectionMatrix = glm::perspective(70.f, 1000.f / 600.f, 0.1f, 1000.f);;
 
 public:
 	void Rotate(const glm::vec3& on, bool local = false) {
@@ -35,6 +35,7 @@ public:
 	glm::mat4 GetMVPMatrix() {
 		return m_ProjectionMatrix * *m_ViewMatrix * m_ModelMatrix;
 	}
+	const glm::vec3 & GetPosition() const { return m_ModelMatrix[3]; }
 };
 
 #endif

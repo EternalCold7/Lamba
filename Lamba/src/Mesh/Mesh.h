@@ -7,6 +7,8 @@
 
 #include "Material.hpp"
 #include <vector>
+
+
 struct MeshCoordinates {
 	float maxY, minY, maxX, minX, maxZ, minZ;
 };
@@ -44,9 +46,10 @@ public:
 	Mesh(MeshData & data);
 	Mesh(MeshRawData && data);
 	Mesh(MeshRawData & data);
+	void SetMaterial(std::shared_ptr<Material> & material) { m_Material = material; }
 
 	inline const ElementsArrayBuffer& GetElementsArray() const { return m_ElementsArray; }
-	inline const Material& GetMaterial() { return *m_Material.get(); }
+	inline const Material& GetMaterial() const { return *m_Material.get(); }
 	inline bool HasSpecularTexture() const { return m_Material->specular_texture.operator bool(); };
 	inline bool HasDiffuseTexture() const { return m_Material->diffuse_texture.operator bool(); }
 
