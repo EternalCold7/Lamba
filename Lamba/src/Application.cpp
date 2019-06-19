@@ -6,6 +6,6 @@ Application::Application(Rx::observable<int> obs, Rx::observable < glm::vec<2, i
 
 	m_Window.AddToDraw(&m_Avent);
 	m_eventObserver.filter([](int val) {return val == GLFW_KEY_R; }).subscribe([this](int val) {
-		m_Avent.Go();
+		m_Avent.GetModelDrawer().Rotate({ 0,0.1f,0 });
 	});
 }

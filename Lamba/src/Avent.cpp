@@ -2,70 +2,60 @@
 #include"Mesh/Loaders/MyObjLoader.hpp"
 
 
-class CommonBlueLight final : public PointLightBuilder {
+class FirstLight final : public LightBuilder {
 protected:
-	virtual glm::vec3 SetAmbient() override {
-		return { 0.f,0.5f,0.7f };
+	virtual glm::vec4 SetPosition() override {
+		return { 0.f,1.f,2.f ,1.f};
 	}
-	virtual glm::vec3 SetDiffuse() override {
-		return { 0.f,0.5f,0.7f };
+	virtual glm::vec4 SetDiffuse() override {
+		return { 0.3f,1.f,1.f,1.f };
 	}
-	virtual glm::vec3 SetSpecular() override { return { 0.f,0.5f,0.7f }; }
-	virtual float SetLinear() override { return 0.09f; }
-	virtual float SetConstant() override { return 1.f; }
-	virtual float SetQuadratic() override { return 0.032f; }
+	virtual glm::vec4 SetSpecular() override { return SetDiffuse(); }
+	virtual float SetLinearAttenuation() override { return 1.f; }
+	virtual float SetConstantAttenuation() override { return 0.f; }
+	virtual float SetQuadraticAttenuation() override { return 0.f; }
+	virtual float SetSpotCutoff() override { return 180.f; }
+	virtual float SetSpotExponent() override { return 0.f; }
+	virtual glm::vec3 SetSpotDirection() override { return { 0.f,0.f,0.f }; }
 };
 
-
-class GreenLight final : public PointLightBuilder {
+class SecondLight final : public LightBuilder {
 protected:
-	virtual glm::vec3 SetAmbient() override {
-		return { 0.4f,0.9f,0.3f };
+	virtual glm::vec4 SetPosition() override {
+		return { 0.f,-2.f,-2.f ,1.f };
 	}
-	virtual glm::vec3 SetDiffuse() override {
-		return SetAmbient();
+	virtual glm::vec4 SetDiffuse() override {
+		return { 0.8f,0.1f,0.1f,1.f };
 	}
-	virtual glm::vec3 SetSpecular() override { return SetAmbient(); }
-	virtual float SetLinear() override { return 0.09f; }
-	virtual float SetConstant() override { return 1.f; }
-	virtual float SetQuadratic() override { return 0.032f; }
-};
+	virtual glm::vec4 SetSpecular() override { return /*{0.1f,0.1f,0.1f,1.f};*/ SetDiffuse();}
+	
 
+	virtual float SetConstantAttenuation() override { return 0.f; }
+	virtual float SetLinearAttenuation() override { return 1.f; }
+	virtual float SetQuadraticAttenuation() override { return 0.f; }
+	virtual float SetSpotCutoff() override { return 80.f; }
+	virtual float SetSpotExponent() override { return 10.f; }
+	virtual glm::vec3 SetSpotDirection() override { return { 0.f,1.f,0.f }; }
+};
 Avent::Avent(const Camera& cam) : m_Drawer(&cam, nullptr)
 {
 	MyObjLoader loader;
-	m_Drawer.SetModel(std::move(std::make_unique<Model>("CarModel/earth/", "Earth.obj", loader)));
+	m_Drawer.SetModel(std::move(std::make_unique<Model>("CarModel/", "untitled.obj", loader)));
 
 	
 	m_LightSources.emplace_back(&cam);
 	m_LightSources.emplace_back(&cam);
-	m_LightSources.emplace_back(&cam);
 
 
 
-	m_LightSources[0].ChangePosition({ 2.f,2.f,2.f });
-	m_LightSources[1].ChangePosition({ -1.f,-1.f,-1.f });
-	m_LightSources[2].ChangePosition({ -1.f,0.f,3.f });
-	CommonBlueLight m;
-	GreenLight gL;
-	for (auto & l : m_LightSources)
-		l.ChangeLight(std::ref(m));
 
-	m_LightSources[1].ChangeLight(gL);
+	FirstLight firstLight;
+	SecondLight secondLight;
+	
+	m_LightSources[0].ChangeLight(firstLight);
+	m_LightSources[1].ChangeLight(secondLight);
+	
 	m_Drawer.SetLights(&m_LightSources);
-
-}
-
-void Avent::Go()
-{
-	float deegres = 5;
-
-	deegres = glm::radians(deegres);
-	for (auto & m : m_Wheels) {
-		auto midx = (m->m_Coordinates.maxX + m->m_Coordinates.minX) / 2;
-		auto midy = (m->m_Coordinates.maxY + m->m_Coordinates.minY) / 2;
-		auto midz = (m->m_Coordinates.maxZ + m->m_Coordinates.minZ) / 2;
-	}
 
 }
 
@@ -118,7 +108,7 @@ void Avent::AventModelDrawer::SetUpToDraw(const Mesh& mesh) const
 		throw;
 
 
-m_Shaders[shaderType].SetUniformui("lightsCount", m_Lights->size());
+	m_Shaders[shaderType].SetUniformui("lightsCount", m_Lights->size());
 	for (unsigned int i = 0; i < m_Lights->size(); ++i) {
 		const auto & lamp = (*m_Lights)[i];
 		m_Setter.SetLightToShader(lamp.GetLight(), currentShader,i);
@@ -129,7 +119,11 @@ m_Shaders[shaderType].SetUniformui("lightsCount", m_Lights->size());
 	currentShader.SetUniformMat4("model", &m_ModelMatrix[0][0]);
 	currentShader.SetUniformMat4("projection", &m_ProjectionMatrix[0][0]);
 	currentShader.SetUniformMat4("view", &m_Camera->GetViewMatrix()[0][0]);
-
+	glm::mat4 v_inv = glm::inverse(m_Camera->GetViewMatrix());
+	currentShader.SetUniformMat4("v_inv", &v_inv[0][0]);
+	glm::mat3 m_3x3_inv_transp = glm::transpose(glm::inverse(glm::mat3(m_ModelMatrix)));
+	currentShader.SetUniformMat3("m_3x3_inv_transp", &m_3x3_inv_transp[0][0]);
+	("m_3x3_inv_transp", 1, GL_FALSE, &m_3x3_inv_transp[0][0]);
 	GLCall(glDrawElements(GL_TRIANGLES, mesh.GetElementsArray().GetDataSize() * sizeof(uint32_t), GL_UNSIGNED_INT, nullptr));
 
 

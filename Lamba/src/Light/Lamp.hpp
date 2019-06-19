@@ -13,18 +13,25 @@ class Lamp : public Drawable,public Transformable {
 
 private:
 	Shader m_Shader;
-	PointLight m_Light;
+	LightSource m_Light;
 	std::unique_ptr<Model> m_Model;
 	void Translate(const glm::vec3 &) {};
 	const Camera * m_Camera;
-	void SetupLight();
 public:
-	void ChangePosition(const glm::vec3 &newPosition) {
-		m_Light.m_position = newPosition; 
-		m_ModelMatrix = glm::translate(m_ModelMatrix, newPosition); 
+
+	void ChangeLight(LightBuilder & builder) {
+	
+	m_Light = builder.GetLight();
+	std::shared_ptr<Material> material = std::make_shared<Material>();
+	
+	material->ambient = m_Light.diffuse;
+	material->diffuse = m_Light.diffuse;
+	material->specular = m_Light.specular;
+	material->specularCof = 0.2;
+	m_Model->GetMeshes()[0].SetMaterial(material);
+	m_ModelMatrix = glm::translate(m_ModelMatrix, glm::vec3(m_Light.position));
 	}
-	void ChangeLight(PointLightBuilder & builder) { m_Light = builder.GetLight(); }
-	const PointLight & GetLight() const noexcept { return m_Light; }
+	const LightSource & GetLight() const noexcept { return m_Light; }
 	Lamp(const Camera * cam);
 	virtual void Draw() const noexcept override {
 
@@ -40,7 +47,7 @@ public:
 		m_Shader.SetUniformMat4("model", &m_ModelMatrix[0][0]);
 		m_Shader.SetUniformMat4("view", &m_Camera->GetViewMatrix()[0][0]);
 		m_Shader.SetUniformMat4("projection", &m_ProjectionMatrix[0][0]);
-		m_Shader.SetUnifrom3f("light.specular", &m_Light.m_specular[0]);
+		m_Shader.SetUnifrom3f("light.specular", &m_Light.specular[0]);
 		glDrawElements(GL_TRIANGLES, m_Model->GetMeshes()[0].GetElementsArray().GetDataSize() * sizeof(uint32_t), GL_UNSIGNED_INT, nullptr);
 
 

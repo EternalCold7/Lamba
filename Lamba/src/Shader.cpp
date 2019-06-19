@@ -83,6 +83,13 @@ void Shader::SetUniformMat4(const std::string & name, const float * data) const
 		throw;
 	glUniformMatrix4fv(loc, 1, GL_FALSE, data);
 }
+void Shader::SetUniformMat3(const std::string& name, const float* data) const
+{
+	auto loc = glGetUniformLocation(m_RendererID, name.c_str());
+	if (loc < 0)
+		throw;
+	glUniformMatrix3fv(loc, 1, GL_FALSE, data);
+}
 
 void Shader::SetUniformui(const std::string & name, const uint32_t val) const
 {
@@ -98,6 +105,14 @@ void Shader::SetUnifrom3f(const std::string & name, const float * val) const
 	if (loc < 0)
 		throw;
 	glUniform3fv(loc, 1, val);
+}
+
+void Shader::SetUnifrom4f(const std::string& name, const float* val) const
+{
+	auto loc = glGetUniformLocation(m_RendererID, name.c_str());
+	if (loc < 0)
+		throw;
+	glUniform4fv(loc, 1, val);
 }
 
 void Shader::SetUniformf(const std::string & name, const float val) const

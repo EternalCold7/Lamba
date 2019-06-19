@@ -18,7 +18,7 @@ Window::Window()
 		glfwTerminate();
 		throw "glfw not initialized";
 	}
-	glClearColor(0.4, 0.4, 0.7,1.0);
+	glClearColor(0.f, 0.f, 0.f, 1.f);
 }
 
 void Window::AddToDraw(Drawable * object)

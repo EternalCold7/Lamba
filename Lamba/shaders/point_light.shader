@@ -4,18 +4,20 @@
 layout(location = 0) in vec3 mVertex;
 layout(location = 1) in vec3 mNormal;
 
+
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
-
+uniform mat3 m_3x3_inv_transp;
 out vec3 fNorm;
 out vec3 fragmentPos;
 
 void main() {
 
 	gl_Position = projection * view * model * vec4(mVertex, 1.f);
-	fragmentPos = vec3(model * vec4(mVertex, 1.f));
+	fragmentPos = vec3(projection * view * model * vec4(mVertex, 1.f));
 	fNorm = mNormal;
+	fNorm = normalize(m_3x3_inv_transp * mNormal);
 }
 
 
@@ -35,54 +37,95 @@ struct Material {
 };
 uniform Material mat;
 
-struct PointLight {
-	vec3 position;
-	vec3 diffuse;
-	vec3 specular;
-	vec3 ambient;
-
-	float quadratic;
-	float constant;
-	float linear;
+struct LightSource
+{
+	vec4 position;
+	vec4 diffuse;
+	vec4 specular;
+	float constantAttenuation, linearAttenuation, quadraticAttenuation;
+	float spotCutoff, spotExponent;
+	vec3 spotDirection;
 };
-
-
+uniform mat4 v_inv;
 uniform unsigned int lightsCount;
-uniform PointLight pointLights[100];
+uniform LightSource lightSources[10];
 out vec4 COLOR;
 
-vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPosition,vec3 viewDir) {
-	vec3 lightDir = normalize(light.position - fragPosition);
-	float diff = max(dot(normal, lightDir), 0.f);
-	vec3 reflectDir = reflect(-lightDir, normal);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.f), mat.specCof);
-	float distance = length(light.position - fragPosition);
-	float attenuation = 1.f / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 
-	vec3 ambient = light.ambient * mat.ambient;
-	vec3 diffuse = light.diffuse * diff * mat.diffuse;
-	vec3 specular = light.specular * spec * mat.specular;
-
-	ambient *= attenuation;
-	specular *= attenuation;
-	diffuse *= attenuation;
-	return (ambient + diffuse + specular);
-}
-
+vec4 scene_ambient = vec4(0.2, 0.2, 0.2, 1.0);
 void main() {
 
-
-	vec3 viewPos = vec3(view[3]);
+	vec4 debugcolor = vec4(0.f, 0.f, 0.f, 0.f);
 	
-	vec3 viewDir = normalize(viewPos - fragmentPos);
-	vec3 norm = normalize(fNorm);
-	vec3 result;
 
-	for (int i = 0; i < lightsCount; ++i)
-		result += CalcPointLight(pointLights[i], norm, fragmentPos, viewDir);
+	vec3 normalDirection = normalize(fNorm);
+	vec3 viewDirection = normalize(vec3(v_inv * vec4(0.0, 0.0, 0.0, 1.0) - vec4(fragmentPos,1.f)));
+	vec3 lightDirection;
+	float attenuation;
 
-	COLOR = vec4(result, 1.f);
+	// initialize total lighting with ambient lighting
+	vec3 totalLighting = vec3(scene_ambient) * mat.ambient;
 
+	for (int index = 0; index < lightsCount; index++) // for all light sources
+	{
+		if (lightSources[index].position.w < 0) // directional light?
+		{
+			//debugcolor = vec4(1.f, 1.f, 1.f, 1.f);
+			attenuation = 1.0; // no attenuation
+			lightDirection = normalize(vec3(lightSources[index].position));
+		}
+		else // point light or spotlight (or other kind of light) 
+		{
+
+			vec3 positionToLightSource = vec3(lightSources[index].position) - fragmentPos;
+			float distance = length(positionToLightSource);
+			lightDirection = normalize(positionToLightSource);
+			attenuation = 1.0 / (lightSources[index].constantAttenuation
+				+ lightSources[index].linearAttenuation * distance
+				+ lightSources[index].quadraticAttenuation * distance * distance);
+
+			if (lightSources[index].spotCutoff <= 90.0) // spotlight?
+			{
+				vec4 debugcolor = vec4(0.f, 0.f, 0.f, 0.f);
+
+				float clampedCosine = max(0.0, dot(-lightDirection, normalize(lightSources[index].spotDirection)));
+				if (clampedCosine < cos(radians(lightSources[index].spotCutoff))) // outside of spotlight cone?
+				{
+					attenuation = 0.0;
+				}
+				else
+				{
+					attenuation = attenuation * pow(clampedCosine, lightSources[index].spotExponent);
+				}
+			}
+		}
+
+
+		vec3 diffuseReflection = attenuation
+			* vec3(lightSources[index].diffuse) * vec3(mat.diffuse)
+			* max(0.0, dot(normalDirection, lightDirection));
+
+		vec3 specularReflection;
+		if (dot(normalDirection, lightDirection) < 0.0) // light source on the wrong side?
+		{
+
+			specularReflection = vec3(0.0, 0.0, 0.0); // no specular reflection
+		}
+		else // light source on the right side
+		{
+
+			specularReflection = attenuation * vec3(lightSources[index].specular) * vec3(mat.specular)
+				* pow(max(0.0, dot(reflect(-lightDirection, normalDirection), viewDirection)), mat.specCof);
+		}
+
+		totalLighting = totalLighting + diffuseReflection + specularReflection;
+
+	}
+
+	gl_FragColor = vec4(totalLighting,1.0);
+	//gl_FragColor = vec4(1.f,0.2f,0.3f, 1.0);
 }
+
+
 
 
