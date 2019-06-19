@@ -47,7 +47,7 @@ public:
 		m_Shader.SetUniformMat4("model", &m_ModelMatrix[0][0]);
 		m_Shader.SetUniformMat4("view", &m_Camera->GetViewMatrix()[0][0]);
 		m_Shader.SetUniformMat4("projection", &m_ProjectionMatrix[0][0]);
-		m_Shader.SetUnifrom3f("light.specular", &m_Light.specular[0]);
+		m_Shader.SetUnifrom3f("light.diffuse", &m_Light.diffuse[0]);
 		glDrawElements(GL_TRIANGLES, m_Model->GetMeshes()[0].GetElementsArray().GetDataSize() * sizeof(uint32_t), GL_UNSIGNED_INT, nullptr);
 
 

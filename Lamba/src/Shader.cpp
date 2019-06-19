@@ -99,6 +99,14 @@ void Shader::SetUniformui(const std::string & name, const uint32_t val) const
 	glUniform1ui(loc, val);
 }
 
+void Shader::SetUniformi(const std::string& name, const int32_t val) const
+{
+	auto loc = glGetUniformLocation(m_RendererID, name.c_str());
+	if (loc < 0)
+		throw;
+	glUniform1i(loc, val);
+}
+
 void Shader::SetUnifrom3f(const std::string & name, const float * val) const
 {
 	auto loc = glGetUniformLocation(m_RendererID, name.c_str());

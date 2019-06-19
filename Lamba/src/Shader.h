@@ -27,6 +27,7 @@ public:
 	void SetUniformMat4(const std::string & name, const float * data)const;
 	void SetUniformMat3(const std::string & name, const float * data)const;
 	void SetUniformui(const std::string & name, const uint32_t val) const;
+	void SetUniformi(const std::string & name, const int32_t val) const;
 	void SetUnifrom3f(const std::string & name, const float * val) const;
 	void SetUnifrom4f(const std::string & name, const float * val) const;
 	void SetUniformf(const std::string & name, const float val) const;

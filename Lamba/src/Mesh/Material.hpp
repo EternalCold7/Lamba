@@ -6,8 +6,8 @@
 struct Material {
 	glm::vec3 diffuse;
 	glm::vec3 ambient;
-	glm::vec3 specular;
-	float specularCof;
+	glm::vec3 specular = { 0.5,0.5,0.5 };
+	float specularCof = 32.f;
 	glm::vec3 filter;
 	float opticalCof;
 

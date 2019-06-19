@@ -19,11 +19,11 @@ void main() {
 out vec4 color;
 
 struct Light {
-	vec3 specular;
+	vec3 diffuse;
 };
 
 uniform Light light;
 
 void main() {
-	color = vec4(light.specular,1.f);
+	color = vec4(light.diffuse,1.f);
 }

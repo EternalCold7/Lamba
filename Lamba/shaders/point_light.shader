@@ -8,7 +8,6 @@ layout(location = 1) in vec3 mNormal;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
-uniform mat3 m_3x3_inv_transp;
 out vec3 fNorm;
 out vec3 fragmentPos;
 
@@ -17,7 +16,7 @@ void main() {
 	gl_Position = projection * view * model * vec4(mVertex, 1.f);
 	fragmentPos = vec3(projection * view * model * vec4(mVertex, 1.f));
 	fNorm = mNormal;
-	fNorm = normalize(m_3x3_inv_transp * mNormal);
+	fNorm = normalize(mNormal);
 }
 
 
@@ -55,7 +54,6 @@ out vec4 COLOR;
 vec4 scene_ambient = vec4(0.2, 0.2, 0.2, 1.0);
 void main() {
 
-	vec4 debugcolor = vec4(0.f, 0.f, 0.f, 0.f);
 	
 
 	vec3 normalDirection = normalize(fNorm);
@@ -68,9 +66,8 @@ void main() {
 
 	for (int index = 0; index < lightsCount; index++) // for all light sources
 	{
-		if (lightSources[index].position.w < 0) // directional light?
+		if (lightSources[index].position.w == 0) // directional light?
 		{
-			//debugcolor = vec4(1.f, 1.f, 1.f, 1.f);
 			attenuation = 1.0; // no attenuation
 			lightDirection = normalize(vec3(lightSources[index].position));
 		}
@@ -122,8 +119,7 @@ void main() {
 
 	}
 
-	gl_FragColor = vec4(totalLighting,1.0);
-	//gl_FragColor = vec4(1.f,0.2f,0.3f, 1.0);
+	COLOR = vec4(totalLighting,1.0);
 }
 
 
