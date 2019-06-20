@@ -22,7 +22,7 @@ protected:
 class SecondLight final : public LightBuilder {
 protected:
 	virtual glm::vec4 SetPosition() override {
-		return { 0.f,-2.f,0.f ,1.f };
+		return { 0.f,-1.f,-5.f ,1.f };
 	}
 	virtual glm::vec4 SetDiffuse() override {
 		return { 2.f,0.f,0.f,1.f };
@@ -31,7 +31,7 @@ protected:
 	
 
 	virtual float SetConstantAttenuation() override { return 0.f; }
-	virtual float SetLinearAttenuation() override { return 8.f; }
+	virtual float SetLinearAttenuation() override { return 0.6f; }
 	virtual float SetQuadraticAttenuation() override { return 0.f; }
 	virtual float SetSpotCutoff() override { return 180.f; }
 	virtual float SetSpotExponent() override { return 10.f; }

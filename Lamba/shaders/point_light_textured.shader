@@ -15,7 +15,7 @@ out vec2 textureCoordinates;
 void main() {
 
 	gl_Position = projection * view * model * vec4(mVertex, 1.f);
-	fragmentPos = vec3(projection * view * model * vec4(mVertex, 1.f));
+	fragmentPos =  vec3(model * vec4(mVertex, 1.f));
 	fNorm = normalize(mNormal);
 	textureCoordinates = mTexCoord;
 }
