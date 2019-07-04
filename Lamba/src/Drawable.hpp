@@ -4,6 +4,7 @@
 class Drawable {
 public:
 	virtual void Draw() const noexcept = 0;
+	virtual ~Drawable() {};
 };
 
 
